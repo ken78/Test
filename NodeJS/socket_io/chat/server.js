@@ -1,10 +1,30 @@
 var express = require('express');
 var app = express();
 
-var http = require('http').Server(app);
+app.set('port', 8080);
+app.use(express.static(__dirname));
 
-var socketIo = require('socket.io');
-var io = socketIo(http);
+// app.configure(
+//     function() {
+//
+//       app.set('port', 8080);
+//       app.use(express.static(__dirname));
+//     });
+
+// var http = require('http').Server(app);
+
+var http = require('http');
+var server = http.createServer(app).listen(app.get('port'));
+
+// var io = require('socket.io');
+// io.listen(http);
+
+var io = require('socket.io').listen(server);
+
+// var io = require('socket.io')(http);
+
+// var socketIo = require('socket.io')(http);
+// var io = socketIo(http);
 
 // ===============================================================================
 // Setup routes handler for url that does http "Get"
@@ -24,11 +44,14 @@ app.get('/',
 // Setup handlers for socket IO events
 // ===============================================================================
 io.on('connection',
-    function(req, resp) {
+    function(socket) {
 
       console.log('A user connected!');
     });
 
 // ===============================================================================
 
-http.listen(8080);
+// If the below throw error on linux workstation box.
+// http.listen(process.env.PORT || 8080);
+
+//http.listen(8080);
