@@ -1,0 +1,53 @@
+<html>
+<head>
+    <title>Chat Example</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+        // 5-22-2015
+        // Global "io" object from "socket.io.js" use by the client to connect to the
+        // node http server.
+        var socket = io.connect();
+
+        socket.on('chat',
+            function(data) {
+
+              // JSON data we expect to get back from server is "{ nick: ken message: my message }"
+              var msg = data.nick + ': ' + data.message;
+
+              $('textarea').val($('textarea').val()+msg+'\n');
+            });
+
+         // Handle UI
+         $(function () {
+
+             // Set nickname
+             $('#nick').on('click',
+                 function () {
+
+                   socket.emit('nick', $('#nickText').val());
+                 });
+
+             // Send chat message
+             $('#chat').on('click',
+                 function() {
+
+                   // Sending the JSON data in form of "{ message: my message }" to server
+                   socket.emit('chat', { message:$('#chatText').val() });
+                 });
+         });
+    </script>
+</head>
+<body>
+    <h1>Simple Chat</h1>
+    <p>
+        <input id="nickText" type="text" placeholder="e.g. MissFunky1981"/>
+        <button id="nick">Set Nickname</button>
+    </p>
+    <textarea style="height:300px;width:500px;"></textarea>
+    <p>
+        <input id="chatText" type="text"/>
+        <button id="chat">Send Chat Message</button>
+    </p>
+</body>
+</html>
